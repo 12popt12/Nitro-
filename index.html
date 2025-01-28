@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نايترو شوب</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color, #f0f0f0);
+            color: var(--text-color, #333);
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+            color: var(--primary-color, #1e90ff);
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .app-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .app-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.1s, box-shadow 0.1s; /* تعديل السرعة هنا */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .app-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        .app-card img {
+            max-width: 100px;
+            margin-bottom: 10px;
+        }
+        .app-card h3 {
+            margin: 10px 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .app-card p {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #666;
+        }
+        .app-card a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--button-color, #1e90ff);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        .app-card a:hover {
+            background-color: #005bb5;
+        }
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        .search-bar input {
+            padding: 10px;
+            font-size: 18px;
+            border: 2px solid var(--primary-color, #1e90ff);
+            border-radius: 5px 0 0 5px;
+            outline: none;
+        }
+        .search-bar button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: var(--button-color, #1e90ff);
+            color: #fff;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .search-bar button:hover {
+            background-color: #005bb5;
+        }
+        .toggle-theme {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: var(--button-color, #1e90ff);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .toggle-theme:hover {
+            background-color: #005bb5;
+        }
+        .idle-message, .timer, .hack-effect {
+            display: none;
+        }
+        .offline-message {
+            display: none;
+            background-color: #ff6347;
+            color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            body {
+                --background-color: #f0f0f0;
+                --text-color: #333;
+                --primary-color: #1e90ff;
+                --button-color: #1e90ff;
+            }
+        }
+        @media (min-width: 601px) {
+            body {
+                --background-color: #333;
+                --text-color: #fff;
+                --primary-color: #ff6347;
+                --button-color: #ff6347;
+            }
+            .app-card {
+                background-color: #444;
+                color: #fff;
+            }
+            .app-card h3, .app-card p {
+                color: #fff;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>نايترو شوب</h1>
+        <div class="offline-message" id="offlineMessage">لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة والمحاولة مرة أخرى.</div>
+        <div class="search-bar">
+            <input type="text" placeholder="ابحث عن تطبيق">
+            <button>بحث</button>
+        </div>
+        <div class="app-list">
+            <div class="app-card">
+                <img src="https://i.postimg.cc/rFqJJjgn/https-asia-browserstatic-vivoglobal-com-Tt-Mp-Trey-Xyz-NQvs7-20180613-635b1cd0e55f5e37794423ffe7122a.png" alt="App Icon">
+                <h3>nitro bot</h3>
+                <p>مساعد شخصي بسيط.</p>
+                <a href="https://apk.e-droid.net/apk/app3467133-75mt0g.apk?v=1">تحميل</a>
+            </div>
+            <!-- أضف المزيد من بطاقات التطبيقات هنا -->
+        </div>
+    </div>
+
+    <button class="toggle-theme" onclick="toggleTheme()">وضع داكن/فاتح</button>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            if (body.style.getPropertyValue('--background-color') === '#121212') {
+                body.style.setProperty('--background-color', '#f0f0f0');
+                body.style.setProperty('--text-color', '#333');
+                body.style.setProperty('--primary-color', '#1e90ff');
+                body.style.setProperty('--button-color', '#1e90ff');
+            } else {
+                body.style.setProperty('--background-color', '#121212');
+                body.style.setProperty('--text-color', '#fff');
+                body.style.setProperty('--primary-color', '#ff6347');
+                body.style.setProperty('--button-color', '#ff6347');
+            }
+        }
+        // إضافة الرسوم المتحركة
+        document.querySelectorAll('.app-card').forEach(card => {
+            card.style.opacity = 0;
+            card.style.transform = 'translateY(50px)';
+            card.style.transition = 'opacity 0.1s, transform 0.1s'; /* تعديل السرعة هنا */
+        });
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.app-card').forEach(card => {
+                card.style.opacity = 1;
+                card.style.transform = 'translateY(0)';
+            });
+        });
+        // التحقق من اتصال الإنترنت
+        window.addEventListener('load', () => {
+            if (!navigator.onLine) {
+                document.getElementById('offlineMessage').style.display = 'block';
+            }
+        });
+        window.addEventListener('offline', () => {
+            document.getElementById('offlineMessage').style.display = 'block';
+        });
+        window.addEventListener('online', () => {
+            document.getElementById('offlineMessage').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
