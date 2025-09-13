@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق الأسئلة اليومية - VCO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 25px;
+        }
+        
+        /* شاشة إدخال الكود */
+        .code-container {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .code-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 18px;
+            text-align: center;
+            margin: 20px 0;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .code-input:focus {
+            border-color: #6a11cb;
+        }
+        
+        /* مؤقت العد التنازلي */
+        .timer-container {
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .timer {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ff3b30;
+            background-color: #ffeeed;
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+        }
+        
+        /* أسئلة */
+        .question-container {
+            margin-bottom: 25px;
+        }
+        
+        .question-number {
+            font-size: 16px;
+            color: #6a11cb;
+            margin-bottom: 10px;
+        }
+        
+        .question-text {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            color: #333;
+        }
+        
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            border-color: #6a11cb;
+            background-color: #f5f5f5;
+        }
+        
+        .option.selected {
+            border-color: #6a11cb;
+            background-color: #eef4ff;
+        }
+        
+        .option i {
+            margin-left: 10px;
+            font-size: 18px;
+            color: #6a11cb;
+        }
+        
+        .submit-btn, .send-btn, .start-btn, .prize-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%);
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .submit-btn:hover, .send-btn:hover, .start-btn:hover, .prize-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(38, 117, 252, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .prize-btn {
+            background: linear-gradient(135deg, #4cd964 0%, #2ecc71 100%);
+            display: none;
+        }
+        
+        /* النتائج */
+        .result-container {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .result-title {
+            font-size: 22px;
+            color: #6a11cb;
+            margin-bottom: 15px;
+        }
+        
+        .result-score {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2575fc;
+            margin: 15px 0;
+        }
+        
+        .result-message {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        
+        .send-btn {
+            background: linear-gradient(135deg, #4cd964 0%, #2ecc71 100%);
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+        }
+        
+        .confirmation {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #eefaea;
+            border-radius: 12px;
+            text-align: center;
+            color: #2ecc71;
+            font-weight: 600;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .question-text {
+                font-size: 18px;
+            }
+            
+            .timer {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>تطبيق الأسئلة اليومية - VCO</h1>
+            <p>اختر الإجابة الصحيحة خلال 20 ثانية وارسل نقاطك</p>
+        </div>
+        
+        <div class="content">
+            <!-- شاشة إدخال الكود -->
+            <div class="code-container" id="code-container">
+                <p>يرجى إدخال كود الدخول لبدء اللعبة</p>
+                <input type="text" class="code-input" id="code-input" placeholder="أدخل الكود هنا">
+                <button class="start-btn" onclick="checkCode()">بدء اللعبة</button>
+            </div>
+            
+            <!-- شاشة الأسئلة -->
+            <div id="game-container" style="display: none;">
+                <div class="timer-container">
+                    <div class="timer" id="timer">200</div>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                
+                <div class="question-container">
+                    <div class="question-number" id="question-number">سؤال 1 من 5</div>
+                    <div class="question-text" id="question-text">ما هي عاصمة المملكة العربية السعودية؟</div>
+                </div>
+                
+                <div class="options-container" id="options-container">
+                    <div class="option" onclick="selectOption(this)" data-correct="true">
+                        <i class="far fa-circle"></i>
+                        الرياض
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <i class="far fa-circle"></i>
+                        جدة
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <i class="far fa-circle"></i>
+                        الدمام
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <i class="far fa-circle"></i>
+                        مكة
+                    </div>
+                </div>
+                
+                <button class="submit-btn" id="submit-btn" onclick="checkAnswer()" disabled>تحقق من الإجابة</button>
+                
+                <div class="result-container" id="result-container">
+                    <div class="result-title">نتيجتك النهائية</div>
+                    <div class="result-score" id="result-score">0</div>
+                    <div class="result-message" id="result-message">أحسنت! لقد حصلت على 0 من 50 نقطة</div>
+                </div>
+                
+                <button class="prize-btn" id="prize-btn" onclick="sendToWhatsApp()">
+                    <i class="fab fa-whatsapp"></i> الحصول على الجوائز عبر واتساب
+                </button>
+                
+                <div class="confirmation" id="confirmation">
+                    تم إعداد رسالة واتساب تحتوي على نتيجتك، سيتم فتح التطبيق قريباً
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            © 2025 تطبيق الأسئلة يوميه
+        </div>
+    </div>
+
+    <script>
+        // الأسئلة والأجوبة
+        const questions = [
+            {
+                question: "ما هي عاصمة المملكة العربية السعودية؟",
+                options: ["الرياض", "جدة", "الدمام", "مكة"],
+                correct: 0
+            },
+            {
+                question: "ما هو أطول نهر في العالم؟",
+                options: ["نهر النيل", "نهر الأمازون", "نهر المسيسيبي", "نهر اليانغتسي"],
+                correct: 0
+            },
+            {
+                question: "كم عدد أيام السنة الكبيسة؟",
+                options: ["365", "366", "364", "367"],
+                correct: 1
+            },
+            {
+                question: "ما هو العنصر الكيميائي الذي رمزه 'O'؟",
+                options: ["ذهب", "فضة", "أوكسجين", "أوزميوم"],
+                correct: 2
+            },
+            {
+                question: "في أي عام انطلقت الألعاب الأولمبية الحديثة؟",
+                options: ["1900", "1896", "1912", "1920"],
+                correct: 1
+            },
+            {
+                question: "ما هو أصغر كوكب في المجموعة الشمسية؟",
+                options: ["عطارد", "الزهرة", "المريخ", "بلوتو"],
+                correct: 0
+            },
+            {
+                question: "ما هو الحيوان الوطني لأستراليا؟",
+                options: ["الكنغر", "الكوالا", "الإمو", "الومبت"],
+                correct: 0
+            },
+            {
+                question: "من هو مؤلف كتاب 'الأمير'؟",
+                options: ["نيكولو مكيافيلي", "أفلاطون", "أرسطو", "توماس هوبز"],
+                correct: 0
+            },
+            {
+                question: "ما هو أسرع حيوان بري؟",
+                options: ["الفهد", "الأسد", "النمر", "الظبي"],
+                correct: 0
+            },
+            {
+                question: "ما هي أكبر محيط في العالم؟",
+                options: ["المحيط الهادئ", "المحيط الأطلسي", "المحيط الهندي", "المحيط المتجمد الشمالي"],
+                correct: 0
+            }
+        ];
+
+        // المتغيرات العامة
+        let currentQuestionIndex = 0;
+        let totalScore = 0;
+        let selectedOption = null;
+        let timer;
+        let timeLeft = 20;
+        let questionsForToday = [];
+        const correctCode = "vco";
+
+        // التحقق من الكود
+        function checkCode() {
+            const codeInput = document.getElementById('code-input').value.toLowerCase();
+            
+            if (codeInput === correctCode) {
+                document.getElementById('code-container').style.display = 'none';
+                document.getElementById('game-container').style.display = 'block';
+                startGame();
+            } else {
+                alert('كود الدخول غير صحيح. يرجى المحاولة مرة أخرى.:');
+            }
+        }
+
+        // بدء اللعبة
+        function startGame() {
+            // اختيار 5 أسئلة عشوائية لليوم
+            selectDailyQuestions();
+            
+            // عرض السؤال الأول
+            loadQuestion();
+            
+            // بدء المؤقت
+            startTimer();
+        }
+
+        // اختيار 5 أسئلة عشوائية لليوم
+        function selectDailyQuestions() {
+            // استخدام التاريخ لإنشاء رقم عشوائي ثابت لكل يوم
+            const today = new Date();
+            const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+            
+            // نسخ الأسئلة وخلطها بطريقة تعتمد على التاريخ
+            const shuffledQuestions = [...questions];
+            for (let i = shuffledQuestions.length - 1; i > 0; i--) {
+                const j = Math.floor((seed % (i + 1)) * shuffledQuestions.length) % (i + 1);
+                [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
+            }
+            
+            // اختيار أول 5 أسئلة
+            questionsForToday = shuffledQuestions.slice(0, 5);
+        }
+
+        // عرض السؤال الحالي
+        function loadQuestion() {
+            const question = questionsForToday[currentQuestionIndex];
+            document.getElementById('question-number').textContent = `سؤال ${currentQuestionIndex + 1} من 5`;
+            document.getElementById('question-text').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.innerHTML = `
+                    <i class="far fa-circle"></i>
+                    ${option}
+                `;
+                optionElement.onclick = () => selectOption(optionElement);
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('prize-btn').style.display = 'none';
+            document.getElementById('confirmation').style.display = 'none';
+            document.getElementById('submit-btn').disabled = true;
+            
+            // إعادة تعيين المؤقت
+            timeLeft = 20;
+            document.getElementById('timer').textContent = timeLeft;
+            document.getElementById('progress-bar').style.width = '100%';
+        }
+
+        // بدء المؤقت
+        function startTimer() {
+            clearInterval(timer);
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+                document.getElementById('progress-bar').style.width = `${(timeLeft / 20) * 100}%`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    // الوقت انتهى، الانتقال للسؤال التالي تلقائياً
+                    setTimeout(nextQuestion, 1000);
+                }
+            }, 1000);
+        }
+
+        // تحديد خيار
+        function selectOption(element) {
+            // إزالة التحديد من جميع الخيارات
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(opt => {
+                opt.classList.remove('selected');
+                opt.querySelector('i').className = 'far fa-circle';
+            });
+            
+            // تحديد الخيار الحالي
+            element.classList.add('selected');
+            element.querySelector('i').className = 'fas fa-check-circle';
+            selectedOption = element;
+            
+            // تمكين زر التحقق
+            document.getElementById('submit-btn').disabled = false;
+        }
+
+        // التحقق من الإجابة
+        function checkAnswer() {
+            clearInterval(timer);
+            
+            const options = document.querySelectorAll('.option');
+            const correctIndex = questionsForToday[currentQuestionIndex].correct;
+            
+            // تحديد الإجابة الصحيحة
+            options[correctIndex].style.borderColor = '#4cd964';
+            options[correctIndex].style.backgroundColor = '#eefaea';
+            
+            // التحقق إذا كانت الإجابة المختارة صحيحة
+            const selectedIndex = Array.from(options).indexOf(selectedOption);
+            const isCorrect = selectedIndex === correctIndex;
+            
+            if (isCorrect) {
+                totalScore += 10;
+            } else if (selectedOption) {
+                selectedOption.style.borderColor = '#ff3b30';
+                selectedOption.style.backgroundColor = '#ffeeed';
+            }
+            
+            // الانتقال للسؤال التالي بعد ثانيتين
+            setTimeout(nextQuestion, 2000);
+        }
+
+        // الانتقال للسؤال التالي
+        function nextQuestion() {
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < questionsForToday.length) {
+                loadQuestion();
+                startTimer();
+            } else {
+                // انتهت جميع الأسئلة
+                showFinalResults();
+            }
+        }
+
+        // عرض النتائج النهائية
+        function showFinalResults() {
+            document.getElementById('question-number').style.display = 'none';
+            document.getElementById('question-text').style.display = 'none';
+            document.getElementById('options-container').style.display = 'none';
+            document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('timer').style.display = 'none';
+            document.getElementById('progress-bar').style.display = 'none';
+            
+            document.getElementById('result-score').textContent = totalScore;
+            document.getElementById('result-message').textContent = `أحسنت! لقد حصلت على ${totalScore} من 50 نقطة`;
+            document.getElementById('result-container').style.display = 'block';
+            document.getElementById('prize-btn').style.display = 'block';
+        }
+
+        // إرسال النتيجة عبر واتساب
+        function sendToWhatsApp() {
+            const message = `نتيجتي في تطبيق الأسئلة اليومية: لقد حصلت على ${totalScore} من 50 نقطة!`;
+            const phoneNumber = "+201207015649";
+            
+            // تشفير الرسالة للرابط
+            const encodedMessage = encodeURIComponent(message);
+            
+            // إنشاء رابط واتساب
+            const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            
+            // فتح الرابط في نافذة جديدة
+            window.open(whatsappURL, '_blank');
+            
+            // عرض رسالة التأكيد
+            document.getElementById('confirmation').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
